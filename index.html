@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A little surprise for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fff7f0;
+    --blush:#ffe1e8;
+    --blush-2:#ffd0dc;
+    --rose:#e8637f;
+    --rose-deep:#c94f6d;
+    --lavender:#e3d6f5;
+    --lavender-2:#d3c0ee;
+    --ink:#5b4550;
+    --ink-soft:#8a7180;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    overflow-x:hidden;
+    background:var(--cream);
+  }
+
+  body{
+    min-height:100vh;
+    min-height:100dvh;
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* ---------- animated background ---------- */
+  .bg{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    background:linear-gradient(120deg, var(--cream), var(--blush), var(--lavender), var(--blush-2), var(--cream));
+    background-size:400% 400%;
+    animation:driftBg 22s ease-in-out infinite;
+  }
+
+  @keyframes driftBg{
+    0%{ background-position:0% 50%; }
+    50%{ background-position:100% 50%; }
+    100%{ background-position:0% 50%; }
+  }
+
+  /* ---------- floating petals ---------- */
+  .petals{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+
+  .petal{
+    position:absolute;
+    top:-10%;
+    width:14px;
+    height:14px;
+    background:linear-gradient(135deg, var(--rose), var(--blush-2));
+    border-radius:0% 60% 0% 60%;
+    opacity:0.75;
+    animation-name:fall, sway;
+    animation-timing-function:linear, ease-in-out;
+    animation-iteration-count:infinite, infinite;
+    will-change:transform;
+  }
+
+  @keyframes fall{
+    0%{ transform:translateY(-10vh) rotate(0deg); }
+    100%{ transform:translateY(110vh) rotate(360deg); }
+  }
+
+  @keyframes sway{
+    0%,100%{ margin-left:0px; }
+    50%{ margin-left:40px; }
+  }
+
+  /* ---------- progress dots ---------- */
+  .progress{
+    position:fixed;
+    top:calc(20px + env(safe-area-inset-top, 0px));
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:9px;
+    z-index:5;
+  }
+
+  .dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:rgba(201, 79, 109, 0.25);
+    transition:background 0.4s ease, transform 0.4s ease;
+  }
+
+  .dot.active{
+    background:var(--rose-deep);
+    transform:scale(1.25);
+  }
+
+  .dot.done{
+    background:var(--rose);
+  }
+
+  /* ---------- layout ---------- */
+  main{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:640px;
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 20px;
+  }
+
+  .screen{
+    width:100%;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    opacity:0;
+    transform:translateY(16px);
+  }
+
+  .screen.active{
+    display:flex;
+  }
+
+  .screen.enter{
+    animation:screenIn 0.9s ease forwards;
+  }
+
+  .screen.leave{
+    animation:screenOut 0.6s ease forwards;
+  }
+
+  @keyframes screenIn{
+    from{ opacity:0; transform:translateY(24px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  @keyframes screenOut{
+    from{ opacity:1; transform:translateY(0); }
+    to{ opacity:0; transform:translateY(-24px); }
+  }
+
+  /* ---------- headings ---------- */
+  .title{
+    font-family:'Dancing Script', cursive;
+    font-weight:700;
+    font-size:clamp(2.2rem, 8vw, 3.4rem);
+    color:var(--rose-deep);
+    margin:6px 0 6px;
+    line-height:1.15;
+    text-wrap:balance;
+  }
+
+  .step-heading{
+    font-family:'Dancing Script', cursive;
+    font-weight:700;
+    font-size:clamp(1.9rem, 7vw, 2.7rem);
+    color:var(--rose-deep);
+    margin:0 0 14px;
+  }
+
+  .subtitle{
+    font-size:clamp(0.95rem, 3vw, 1.1rem);
+    color:var(--ink-soft);
+    margin:0 0 34px;
+    letter-spacing:0.02em;
+  }
+
+  .step-text{
+    font-size:clamp(1rem, 3.4vw, 1.15rem);
+    line-height:1.7;
+    color:var(--ink);
+    max-width:440px;
+    margin:0 0 34px;
+  }
+
+  /* ---------- engaging buttons ---------- */
+  .btn{
+    position:relative;
+    overflow:hidden;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:1.05rem;
+    color:#fff;
+    background:linear-gradient(135deg, var(--rose), var(--rose-deep));
+    border:none;
+    border-radius:999px;
+    padding:17px 36px;
+    cursor:pointer;
+    animation:pulseGlow 2.6s ease-in-out infinite;
+    transition:transform 0.25s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+  }
+
+  .btn::after{
+    content:'';
+    position:absolute;
+    top:0;
+    left:-60%;
+    width:40%;
+    height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.65), transparent);
+    animation:shine 3.2s ease-in-out infinite;
+    transform:skewX(-20deg);
+  }
+
+  @keyframes shine{
+    0%{ left:-60%; }
+    45%{ left:130%; }
+    100%{ left:130%; }
+  }
+
+  @keyframes pulseGlow{
+    0%, 100%{ box-shadow:0 10px 24px rgba(201, 79, 109, 0.35); }
+    50%{ box-shadow:0 14px 34px rgba(201, 79, 109, 0.55); }
+  }
+
+  .btn:hover{
+    transform:translateY(-2px) scale(1.04);
+  }
+
+  .btn:active{
+    transform:translateY(0) scale(0.97);
+  }
+
+  .btn .arrow{
+    display:inline-block;
+    transition:transform 0.25s ease;
+  }
+
+  .btn:hover .arrow{
+    transform:translateX(4px);
+  }
+
+  /* ---------- quote step ---------- */
+  .quote{
+    max-width:440px;
+    margin:0 0 34px;
+    position:relative;
+    padding:10px 18px;
+  }
+
+  .quote-mark{
+    font-family:'Dancing Script', cursive;
+    font-size:3.2rem;
+    color:var(--rose);
+    opacity:0.55;
+    line-height:0.4;
+    display:block;
+  }
+
+  .quote-mark.end{
+    text-align:right;
+  }
+
+  .quote p{
+    font-family:'Dancing Script', cursive;
+    font-size:clamp(1.4rem, 5.5vw, 1.9rem);
+    color:var(--rose-deep);
+    line-height:1.4;
+    margin:2px 0;
+  }
+
+  .quote-tag{
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    letter-spacing:0.04em;
+  }
+
+  /* ---------- final message screen ---------- */
+  .heart{
+    font-size:2.2rem;
+    color:var(--rose);
+    animation:beat 1.6s ease-in-out infinite;
+    margin-bottom:6px;
+    filter:drop-shadow(0 4px 10px rgba(201,79,109,0.35));
+  }
+
+  @keyframes beat{
+    0%, 100%{ transform:scale(1); }
+    15%{ transform:scale(1.18); }
+    30%{ transform:scale(1); }
+    45%{ transform:scale(1.12); }
+    60%{ transform:scale(1); }
+  }
+
+  .message-card{
+    background:rgba(255, 255, 255, 0.55);
+    backdrop-filter:blur(6px);
+    border-radius:24px;
+    padding:34px 28px;
+    box-shadow:0 20px 50px rgba(180, 130, 150, 0.18);
+    border:1px solid rgba(255,255,255,0.6);
+  }
+
+  .msg-heading{
+    font-family:'Dancing Script', cursive;
+    font-weight:700;
+    font-size:clamp(1.8rem, 6vw, 2.4rem);
+    color:var(--rose-deep);
+    margin:0 0 18px;
+  }
+
+  .line{
+    font-size:clamp(1rem, 3.2vw, 1.15rem);
+    line-height:1.75;
+    color:var(--ink);
+    margin:0 0 14px;
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .screen.active .line.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  .line.flirty{
+    font-family:'Dancing Script', cursive;
+    font-size:clamp(1.25rem, 4.5vw, 1.5rem);
+    color:var(--rose-deep);
+    margin-top:6px;
+  }
+
+  .signature{
+    font-family:'Dancing Script', cursive;
+    font-size:1.4rem;
+    color:var(--rose-deep);
+    margin-top:20px;
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .signature.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  .flowers-bottom{
+    display:flex;
+    gap:14px;
+    margin-top:30px;
+  }
+
+  /* ---------- sparkles ---------- */
+  .sparkles{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+
+  .sparkle{
+    position:absolute;
+    width:6px;
+    height:6px;
+    background:#fff;
+    border-radius:50%;
+    box-shadow:0 0 8px 2px rgba(255, 230, 240, 0.9);
+    opacity:0;
+    animation:twinkle 2.6s ease-in-out infinite;
+  }
+
+  @keyframes twinkle{
+    0%, 100%{ opacity:0; transform:scale(0.6); }
+    50%{ opacity:1; transform:scale(1.15); }
+  }
+
+  /* ---------- flower svg bloom ---------- */
+  .flower{
+    width:56px;
+    height:56px;
+    animation:bloom 1.4s cubic-bezier(.24,1.4,.4,1) both;
+  }
+
+  .flower.small{
+    width:38px;
+    height:38px;
+  }
+
+  .flower .petal-shape{
+    transform-origin:50% 50%;
+    animation:petalOpen 1s ease both;
+  }
+
+  .flower .p1{ animation-delay:0.05s; }
+  .flower .p2{ animation-delay:0.12s; }
+  .flower .p3{ animation-delay:0.19s; }
+  .flower .p4{ animation-delay:0.26s; }
+  .flower .p5{ animation-delay:0.33s; }
+  .flower .p6{ animation-delay:0.4s; }
+
+  @keyframes bloom{
+    from{ opacity:0; transform:scale(0.4); }
+    to{ opacity:1; transform:scale(1); }
+  }
+
+  @keyframes petalOpen{
+    from{ transform:scale(0.2); opacity:0; }
+    to{ transform:scale(1); opacity:1; }
+  }
+
+  .flower-decor{
+    position:absolute;
+    pointer-events:none;
+    opacity:0.9;
+  }
+
+  .flower-top-left{ top:6%; left:4%; }
+  .flower-bottom-right{ bottom:8%; right:6%; }
+
+  @media (max-width:480px){
+    .flower-decor{ transform:scale(0.75); }
+    .message-card{ padding:26px 20px; }
+  }
+
+  @media (min-width:481px) and (max-width:768px){
+    .flower-decor{ transform:scale(0.9); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{
+      animation-duration:0.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="petals" id="petals"></div>
+
+<div class="progress" id="progress">
+  <span class="dot active" data-step="1"></span>
+  <span class="dot" data-step="2"></span>
+  <span class="dot" data-step="3"></span>
+  <span class="dot" data-step="4"></span>
+  <span class="dot" data-step="5"></span>
+</div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="petalGrad" cx="35%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#ffd6e0"/>
+      <stop offset="100%" stop-color="#e8637f"/>
+    </radialGradient>
+    <radialGradient id="petalGradSoft" cx="35%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#f3e6fb"/>
+      <stop offset="100%" stop-color="#c7a9e8"/>
+    </radialGradient>
+  </defs>
+</svg>
+
+<main>
+
+  <!-- STEP 1 -->
+  <section id="step1" class="screen active enter">
+    <div class="flower-decor flower-top-left">
+      <svg class="flower" viewBox="0 0 100 100">
+        <g fill="url(#petalGrad)">
+          <ellipse class="petal-shape p1" cx="50" cy="26" rx="14" ry="22"/>
+          <ellipse class="petal-shape p2" cx="70" cy="38" rx="14" ry="22" transform="rotate(60 50 50)"/>
+          <ellipse class="petal-shape p3" cx="70" cy="62" rx="14" ry="22" transform="rotate(120 50 50)"/>
+          <ellipse class="petal-shape p4" cx="50" cy="74" rx="14" ry="22" transform="rotate(180 50 50)"/>
+          <ellipse class="petal-shape p5" cx="30" cy="62" rx="14" ry="22" transform="rotate(240 50 50)"/>
+          <ellipse class="petal-shape p6" cx="30" cy="38" rx="14" ry="22" transform="rotate(300 50 50)"/>
+        </g>
+        <circle cx="50" cy="50" r="10" fill="#fff3d6"/>
+      </svg>
+    </div>
+    <div class="flower-decor flower-bottom-right">
+      <svg class="flower small" viewBox="0 0 100 100">
+        <g fill="url(#petalGradSoft)">
+          <ellipse class="petal-shape p1" cx="50" cy="26" rx="14" ry="22"/>
+          <ellipse class="petal-shape p2" cx="70" cy="38" rx="14" ry="22" transform="rotate(60 50 50)"/>
+          <ellipse class="petal-shape p3" cx="70" cy="62" rx="14" ry="22" transform="rotate(120 50 50)"/>
+          <ellipse class="petal-shape p4" cx="50" cy="74" rx="14" ry="22" transform="rotate(180 50 50)"/>
+          <ellipse class="petal-shape p5" cx="30" cy="62" rx="14" ry="22" transform="rotate(240 50 50)"/>
+          <ellipse class="petal-shape p6" cx="30" cy="38" rx="14" ry="22" transform="rotate(300 50 50)"/>
+        </g>
+        <circle cx="50" cy="50" r="10" fill="#fff8f0"/>
+      </svg>
+    </div>
+
+    <h1 class="title">A little surprise for you <span>🌸</span></h1>
+    <p class="subtitle">trust me, this one's worth it</p>
+    <button class="btn next-btn" data-next="step2" type="button">Open it <span class="arrow">→</span></button>
+  </section>
+
+  <!-- STEP 2 -->
+  <section id="step2" class="screen">
+    <h2 class="step-heading">Wait, one sec...</h2>
+    <p class="step-text">Before you see it — are you smiling yet? Because I kind of am, just thinking about you reading this. 😊</p>
+    <button class="btn next-btn" data-next="step3" type="button">I'm ready <span class="arrow">→</span></button>
+  </section>
+
+  <!-- STEP 3 -->
+  <section id="step3" class="screen">
+    <h2 class="step-heading">Okay, a little hint...</h2>
+    <p class="step-text">This message is from someone who's been thinking about you more than they'd like to admit. 😏</p>
+    <button class="btn next-btn" data-next="step4" type="button">Keep going <span class="arrow">→</span></button>
+  </section>
+
+  <!-- STEP 4 -->
+  <section id="step4" class="screen">
+    <h2 class="step-heading">Almost there...</h2>
+    <div class="quote">
+      <span class="quote-mark">&ldquo;</span>
+      <p>You're the reason I smile at my phone like an idiot.</p>
+      <span class="quote-mark end">&rdquo;</span>
+    </div>
+    <p class="quote-tag">— probably you, in a few seconds</p>
+    <button class="btn next-btn" data-next="step5" type="button">Show me <span class="arrow">→</span></button>
+  </section>
+
+  <!-- STEP 5 -->
+  <section id="step5" class="screen">
+    <div class="sparkles" id="sparkles"></div>
+    <div class="heart">❤</div>
+
+    <div class="message-card">
+      <h2 class="msg-heading">Hey you</h2>
+      <p class="line">This is where your message goes — replace this placeholder with whatever you actually want to say.</p>
+      <p class="line">It can be a memory, an inside joke, a reason you appreciate them, or just a simple "I was thinking about you." Keep it honest, it'll land better than anything fancy.</p>
+      <p class="line">Write a couple of short paragraphs here. Shorter lines feel more sincere than one giant block of text.</p>
+      <p class="line flirty">P.S. — you're kind of my favorite notification. 💌</p>
+      <p class="signature">— your name</p>
+    </div>
+
+    <div class="flowers-bottom">
+      <svg class="flower small" viewBox="0 0 100 100">
+        <g fill="url(#petalGrad)">
+          <ellipse class="petal-shape p1" cx="50" cy="26" rx="14" ry="22"/>
+          <ellipse class="petal-shape p2" cx="70" cy="38" rx="14" ry="22" transform="rotate(60 50 50)"/>
+          <ellipse class="petal-shape p3" cx="70" cy="62" rx="14" ry="22" transform="rotate(120 50 50)"/>
+          <ellipse class="petal-shape p4" cx="50" cy="74" rx="14" ry="22" transform="rotate(180 50 50)"/>
+          <ellipse class="petal-shape p5" cx="30" cy="62" rx="14" ry="22" transform="rotate(240 50 50)"/>
+          <ellipse class="petal-shape p6" cx="30" cy="38" rx="14" ry="22" transform="rotate(300 50 50)"/>
+        </g>
+        <circle cx="50" cy="50" r="10" fill="#fff3d6"/>
+      </svg>
+      <svg class="flower small" viewBox="0 0 100 100">
+        <g fill="url(#petalGradSoft)">
+          <ellipse class="petal-shape p1" cx="50" cy="26" rx="14" ry="22"/>
+          <ellipse class="petal-shape p2" cx="70" cy="38" rx="14" ry="22" transform="rotate(60 50 50)"/>
+          <ellipse class="petal-shape p3" cx="70" cy="62" rx="14" ry="22" transform="rotate(120 50 50)"/>
+          <ellipse class="petal-shape p4" cx="50" cy="74" rx="14" ry="22" transform="rotate(180 50 50)"/>
+          <ellipse class="petal-shape p5" cx="30" cy="62" rx="14" ry="22" transform="rotate(240 50 50)"/>
+          <ellipse class="petal-shape p6" cx="30" cy="38" rx="14" ry="22" transform="rotate(300 50 50)"/>
+        </g>
+        <circle cx="50" cy="50" r="10" fill="#fff8f0"/>
+      </svg>
+      <svg class="flower small" viewBox="0 0 100 100">
+        <g fill="url(#petalGrad)">
+          <ellipse class="petal-shape p1" cx="50" cy="26" rx="14" ry="22"/>
+          <ellipse class="petal-shape p2" cx="70" cy="38" rx="14" ry="22" transform="rotate(60 50 50)"/>
+          <ellipse class="petal-shape p3" cx="70" cy="62" rx="14" ry="22" transform="rotate(120 50 50)"/>
+          <ellipse class="petal-shape p4" cx="50" cy="74" rx="14" ry="22" transform="rotate(180 50 50)"/>
+          <ellipse class="petal-shape p5" cx="30" cy="62" rx="14" ry="22" transform="rotate(240 50 50)"/>
+          <ellipse class="petal-shape p6" cx="30" cy="38" rx="14" ry="22" transform="rotate(300 50 50)"/>
+        </g>
+        <circle cx="50" cy="50" r="10" fill="#fff3d6"/>
+      </svg>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ---- floating petals ----
+  const petalContainer = document.getElementById('petals');
+  const PETAL_COUNT = 16;
+
+  for (let i = 0; i < PETAL_COUNT; i++) {
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+
+    const size = 8 + Math.random() * 10;
+    const left = Math.random() * 100;
+    const fallDuration = 9 + Math.random() * 8;
+    const swayDuration = 3 + Math.random() * 3;
+    const delay = Math.random() * 12;
+    const hueShift = Math.random() > 0.5;
+
+    petal.style.width = size + 'px';
+    petal.style.height = size + 'px';
+    petal.style.left = left + 'vw';
+    petal.style.animationDuration = fallDuration + 's, ' + swayDuration + 's';
+    petal.style.animationDelay = '-' + delay + 's, -' + (delay % swayDuration) + 's';
+    if (hueShift) {
+      petal.style.background = 'linear-gradient(135deg, #d3c0ee, #ffd0dc)';
+    }
+
+    petalContainer.appendChild(petal);
+  }
+
+  // ---- sparkles on final screen ----
+  const sparkleContainer = document.getElementById('sparkles');
+  const SPARKLE_COUNT = 14;
+
+  for (let i = 0; i < SPARKLE_COUNT; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.style.top = (Math.random() * 100) + '%';
+    sparkle.style.left = (Math.random() * 100) + '%';
+    sparkle.style.animationDelay = (Math.random() * 2.6) + 's';
+    sparkleContainer.appendChild(sparkle);
+  }
+
+  // ---- step flow ----
+  const stepOrder = ['step1', 'step2', 'step3', 'step4', 'step5'];
+  const dots = document.querySelectorAll('.dot');
+
+  function updateDots(stepIndex) {
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === stepIndex);
+      dot.classList.toggle('done', i < stepIndex);
+    });
+  }
+
+  function goToStep(currentId, nextId) {
+    const currentScreen = document.getElementById(currentId);
+    const nextScreen = document.getElementById(nextId);
+    const nextIndex = stepOrder.indexOf(nextId);
+
+    currentScreen.classList.remove('enter');
+    currentScreen.classList.add('leave');
+
+    setTimeout(() => {
+      currentScreen.classList.remove('active', 'leave');
+      nextScreen.classList.add('active', 'enter');
+      updateDots(nextIndex);
+
+      if (nextId === 'step5') {
+        const lines = nextScreen.querySelectorAll('.line, .signature');
+        lines.forEach((line, index) => {
+          setTimeout(() => {
+            line.classList.add('show');
+          }, 350 + index * 450);
+        });
+      }
+    }, 550);
+  }
+
+  document.querySelectorAll('.next-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const currentId = btn.closest('.screen').id;
+      const nextId = btn.getAttribute('data-next');
+      goToStep(currentId, nextId);
+    });
+  });
+</script>
+
+</body>
+</html>
